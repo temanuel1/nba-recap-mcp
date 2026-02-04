@@ -1,0 +1,21 @@
+[project]
+name = "nba-recap-mcp"
+version = "0.1.0"
+description = "MCP server for AI-powered NBA game recaps"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp",
+    "nba_api>=1.11.3",
+    "requests",
+    "python-dotenv>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

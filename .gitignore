@@ -1,0 +1,4 @@
+/.venv
+uv.lock
+__pycache__
+nba_recap_mcp.egg-info
