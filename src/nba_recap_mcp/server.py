@@ -12,5 +12,8 @@ register_box_score(mcp)
 register_play_by_play(mcp)
 register_subreddit_content(mcp)
 
-if __name__ == "__main__":
+def main():
     mcp.run()
+
+if __name__ == "__main__":
+    main()
