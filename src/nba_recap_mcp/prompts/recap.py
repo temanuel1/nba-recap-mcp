@@ -17,8 +17,5 @@ When fan comments are available, actively weave them into your narrative:
 
 Don't just summarize stats - tell the story of the game through both the action AND how fans are reacting to it.
 
-Fan's message:
-<message>recap {team_name}</message>
-
 When fetching data, call all independent tools in parallel rather than sequentially. Only call tools sequentially when one depends on another (e.g. you need a game_id to call play_by_play).
 """

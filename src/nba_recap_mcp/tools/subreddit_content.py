@@ -16,7 +16,7 @@ def register_subreddit_content(mcp: FastMCP):
     def subreddit_content(
         home_team_nickname: str, away_team_nickname: str, subreddit: str
     ) -> str:
-        """Finds live game thread from subreddit and fetches comments/replies for contextual color.
+        """Finds live game thread from subreddit and fetches fan comments and replies for contextual color.
 
         Returns real-time fan reactions, hot takes, and commentary that capture
         the emotional pulse of the game. These comments/replies will give more context
@@ -29,7 +29,7 @@ def register_subreddit_content(mcp: FastMCP):
                        Can be "nba", "lakers", "torontoraptors", etc.
 
         Returns:
-            JSON string with comments/replies on success,
+            JSON string with fans' comments and replies on success,
             or JSON string with error key on failure.
         """
         try:

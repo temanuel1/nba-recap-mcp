@@ -11,20 +11,32 @@ from nba_recap_mcp.resources.mappings import SUBREDDIT_MAPPING
 def register_game_initializer(mcp: FastMCP):
     @mcp.tool()
     def game_initializer(team_name: str) -> str:
-        """Initialize a game recap session. This is always the first step when a user asks for a game recap.
-
-        After calling this tool, call box_score, play_by_play, and subreddit_content in parallel
-        using the returned game_id and subreddit info. Then generate a recap that:
-        - Follows chronological game flow (quarter by quarter)
-        - Highlights key moments, runs, player performances, and turning points
-        - Weaves in fan comments from Reddit to capture the emotional pulse of the game
-        - Tells the story through both the action AND how fans are reacting to it
+        """Initialize game_id (from nba.com) as well as team nicknames and their subreddits.
 
         Args:
             team_name: NBA team nickname (case-sensitive), e.g. Lakers, Warriors, Celtics
 
         Returns:
-            JSON string with game_id, team nicknames, and subreddit names on success,
+            JSON string with game_id, team nicknames, and subreddit names on success
+
+            example schema:
+            {
+                "game_id": id for game from nba.com,
+                "home_team_nickname": nickname for home team from nba.com,
+                "away_team_nickname": nickname for away team from nba.com,
+                "home_team_subreddit": subreddit for home team,
+                "away_team_subreddit": subreddit for away team,
+            }
+
+            example response:
+            {
+                "game_id": "0022500670",
+                "home_team_nickname": "Spurs",
+                "away_team_nickname": "Hornets",
+                "home_team_subreddit": "NBASpurs",
+                "away_team_subreddit": "CharlotteHornets"
+            }
+
             or JSON string with error key on failure.
         """
         try:
