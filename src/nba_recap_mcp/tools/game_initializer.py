@@ -11,33 +11,30 @@ from nba_recap_mcp.resources.mappings import SUBREDDIT_MAPPING
 def register_game_initializer(mcp: FastMCP):
     @mcp.tool()
     def game_initializer(team_name: str) -> str:
-        """Initialize game_id (from nba.com) as well as team nicknames and their subreddits.
+        """Initialize game info and identify available diverse data sources.
 
         Args:
             team_name: NBA team nickname (case-sensitive), e.g. Lakers, Warriors, Celtics
 
         Returns:
-            JSON string with game_id, team nicknames, and subreddit names on success
+            JSON string containing game metadata and a 'perspectives_available' menu.
 
-            example schema:
-            {
-                "game_id": id for game from nba.com,
-                "home_team_nickname": nickname for home team from nba.com,
-                "away_team_nickname": nickname for away team from nba.com,
-                "home_team_subreddit": subreddit for home team,
-                "away_team_subreddit": subreddit for away team,
-            }
+            The 'perspectives_available' object outlines the different subreddit
+            communities (home bias, away bias, neutral) that should be queried
+            to form a complete picture.
 
             example response:
             {
-                "game_id": "0022500670",
-                "home_team_nickname": "Spurs",
-                "away_team_nickname": "Hornets",
-                "home_team_subreddit": "NBASpurs",
-                "away_team_subreddit": "CharlotteHornets"
+                "game_info": {
+                    "game_id": "0022500670",
+                    "matchup": "Spurs vs Hornets"
+                },
+                "perspectives_available": {
+                    "home_bias": { "team": "Spurs", "subreddit": "NBASpurs" },
+                    "away_bias": { "team": "Hornets", "subreddit": "CharlotteHornets" },
+                    "neutral": { "subreddit": "nba" }
+                }
             }
-
-            or JSON string with error key on failure.
         """
         try:
             team_id = get_team_id(team_nickname=team_name)
@@ -61,13 +58,25 @@ def register_game_initializer(mcp: FastMCP):
             home_team_nickname = get_team_nickname(game["HOME_TEAM_ID"])
             away_team_nickname = get_team_nickname(game["VISITOR_TEAM_ID"])
 
+            # Return a "Menu" of perspectives rather than a flat list
             return json.dumps(
                 {
-                    "game_id": game["GAME_ID"],
-                    "home_team_nickname": home_team_nickname,
-                    "away_team_nickname": away_team_nickname,
-                    "home_team_subreddit": SUBREDDIT_MAPPING.get(home_team_nickname),
-                    "away_team_subreddit": SUBREDDIT_MAPPING.get(away_team_nickname),
+                    "game_info": {
+                        "game_id": game["GAME_ID"],
+                        "matchup": f"{home_team_nickname} vs {away_team_nickname}",
+                    },
+                    # This structure hints to the LLM that there are 3 distinct buckets of info
+                    "perspectives_available": {
+                        "home_bias": {
+                            "team": home_team_nickname,
+                            "subreddit": SUBREDDIT_MAPPING.get(home_team_nickname),
+                        },
+                        "away_bias": {
+                            "team": away_team_nickname,
+                            "subreddit": SUBREDDIT_MAPPING.get(away_team_nickname),
+                        },
+                        "neutral": {"subreddit": "nba"},
+                    },
                 }
             )
 

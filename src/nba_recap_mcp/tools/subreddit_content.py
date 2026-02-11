@@ -16,17 +16,20 @@ def register_subreddit_content(mcp: FastMCP):
     def subreddit_content(
         home_team_nickname: str, away_team_nickname: str, subreddit: str
     ) -> str:
-        """Finds live game thread from subreddit and fetches fan comments and replies for contextual color.
+        """Fetches fan reactions from a SPECIFIC community perspective.
 
-        Returns real-time fan reactions, hot takes, and commentary that capture
-        the emotional pulse of the game. These comments/replies will give more context
-        to the game beyond stats and box scores.
+        IMPORTANT: Reddit game threads are echo chambers.
+        - Querying the 'home' team subreddit only gives the home bias.
+        - Querying the 'away' team subreddit only gives the away bias.
+        - Querying 'nba' gives the neutral bias.
+
+        To provide a comprehensive and objective recap, you should invoke this
+        tool multiple times to aggregate differing perspectives.
 
         Args:
-            home_team_nickname: Home team nickname (e.g., "Thunder", "Warriors")
-            away_team_nickname: Away team nickname (e.g., "Thunder", "Warriors")
-            subreddit: Subreddit to search for game thread
-                       Can be "nba", "lakers", "torontoraptors", etc.
+            home_team_nickname: Home team nickname (e.g., "Thunder")
+            away_team_nickname: Away team nickname (e.g., "Warriors")
+            subreddit: The specific community to query.
 
         Returns:
             JSON string with fans' comments and replies on success,
