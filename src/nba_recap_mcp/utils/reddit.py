@@ -1,7 +1,13 @@
+import logging
+import re
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 COMMENT_URL = "https://www.reddit.com/comments/{post_id}.json"
 REDDIT_HEADER = {"User-Agent": "nba_recap_agent/0.1"}
+GAME_THREAD_TITLE_RE = re.compile(r"^game thread:", re.IGNORECASE)
 
 
 def extract_comments(children: list) -> list[str]:
@@ -34,17 +40,17 @@ def find_game_thread(
     try:
         resp = requests.get(search_url, params=search_params, headers=REDDIT_HEADER)
         resp.raise_for_status()
+    except requests.RequestException:
+        logger.exception("Reddit search failed for r/%s", subreddit)
+        return None
 
-        for post in resp.json()["data"]["children"]:
-            data = post["data"]
-            title = data["title"]
-            if (
-                (title.startswith("GAME THREAD:") or title.startswith("Game Thread:"))
-                and home_team_nickname in title
-                and away_team_nickname in title
-            ):
-                return data["id"]
-    except Exception:
-        pass
+    home_re = re.compile(rf"\b{re.escape(home_team_nickname)}\b")
+    away_re = re.compile(rf"\b{re.escape(away_team_nickname)}\b")
+
+    for post in resp.json()["data"]["children"]:
+        data = post["data"]
+        title = data["title"]
+        if GAME_THREAD_TITLE_RE.match(title) and home_re.search(title) and away_re.search(title):
+            return data["id"]
 
     return None

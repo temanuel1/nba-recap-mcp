@@ -10,8 +10,10 @@ def get_team_id(team_nickname: str) -> int | None:
     return None
 
 
-def get_team_nickname(team_id: str) -> str:
+def get_team_nickname(team_id: int) -> str:
     """Convert team_id to team nickname from nba.com."""
     all_teams = teams.get_teams()
     team = next((team for team in all_teams if team["id"] == team_id), None)
+    if team is None:
+        raise ValueError(f"Unknown NBA team_id: {team_id}")
     return team["nickname"]
